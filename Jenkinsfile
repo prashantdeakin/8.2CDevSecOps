@@ -7,7 +7,14 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/prashantdeakin/8.2CDevSecOps.git'
             }
         }
-        
+        stage('Check Node') {
+            steps {
+                sh 'echo PATH=$PATH'
+                sh 'node -v'
+                sh 'npm -v'
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
                 sh 'npm install'
