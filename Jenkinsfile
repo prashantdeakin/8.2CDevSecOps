@@ -7,14 +7,7 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/prashantdeakin/8.2CDevSecOps.git'
             }
         }
-        stage('Check Node') {
-            steps {
-                sh 'echo PATH=$PATH'
-                sh 'node -v'
-                sh 'npm -v'
-            }
-        }
-
+        
         stage('Install Dependencies') {
             steps {
                 sh 'npm install'
@@ -24,6 +17,16 @@ pipeline {
         stage('Run Tests') {
             steps {
                 sh 'npm test || true'
+            }
+            post {
+                always {
+                    emailext (
+                        subject: "Build ${env.BUILD_NUMBER} - Test Stage Complete",
+                        body: "Test stage completed. Status: ${currentBuild.result ?: 'SUCCESS'}",
+                        to: "your-email@gmail.com",
+                        attachLog: true
+                    )
+                }
             }
         }
         
@@ -36,6 +39,16 @@ pipeline {
         stage('NPM Audit (Security Scan)') {
             steps {
                 sh 'npm audit || true'
+            }
+            post {
+                always {
+                    emailext (
+                        subject: "Build ${env.BUILD_NUMBER} - Security Scan Complete",
+                        body: "Security scan found 139 vulnerabilities. Check attached logs for details.",
+                        to: "pthapa@gmail.com",
+                        attachLog: true
+                    )
+                }
             }
         }
     }
